@@ -1,4 +1,3 @@
-from ssl import SSL_ERROR_SSL
 from colorama import Fore, Style, init
 import urllib.request
 import time
@@ -43,28 +42,21 @@ def msdorker():
             pass
         else:
             os.mkdir(domain)
-        os.chdir(domain)
+        os.chdir(domain)        
         for files in file_types:
-            try:
-                print(info + f'[info] Checking for {files} extensions.')
-                for results in search(f'site:{domain} filetype:{files}', tld='com', lang='en', num=10, start=0, stop=None, pause=5):
-                    print(success + f'[{files} extension found] - {results}')
-                    url_path = results
-                    head, tail = os.path.split(url_path)
-                    urllib.request.urlretrieve(url_path, f'{tail}')
-                    request = request + 1
-                    if request == 100:
-                        break
-                    time.sleep(1)
-            except urllib.error.HTTPError as e:
-                if e.code == 404:
-                    print(
-                        fail + f'[warn] Web server is responding with a 404 error. Skipping.')
-                    continue
-    except urllib.error.HTTPError as e:
-        if e.code == 429:
-            print(
-                fail + f'\n[warn] Google is timing out queries. Wait a while and try again.\n')
+            print(info + f'[info] Checking for {files} extensions.')
+            for results in search(f'site:{domain} filetype:{files}', tld='com', lang='en', num=10, start=0, stop=None, pause=5):
+                print(success + f'[{files} extension found] - {results}')
+                url_path = results
+                head, tail = os.path.split(url_path)
+                urllib.request.urlretrieve(url_path, f'{tail}')
+                request = request + 1
+                if request == 100:
+                    break
+                time.sleep(1)
+    except urllib.error.HTTPError:
+        print(
+            fail + f'\n[warn] Google is timing out queries. Wait a while and try again.\n')
 
 
 if __name__ == "__main__":
