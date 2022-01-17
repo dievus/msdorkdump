@@ -65,7 +65,7 @@ if __name__ == "__main__":
         domain = sys.argv[1]
         msdorker()
         file_exists = exists('.google-cookie')
-        if file_exists is not None:
+        if file_exists == True:
             os.remove('.google-cookie')
     except KeyboardInterrupt:
         print("\nYou either fat fingered this, or meant to do it. Either way, goodbye!\n")
