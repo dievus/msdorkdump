@@ -41,14 +41,15 @@ def msdorker():
         if isdir is True:
             pass
         else:
-            os.mkdir(domain)        
+            os.mkdir(domain)
+        os.chdir(domain)        
         for files in file_types:
             print(info + f'[info] Checking for {files} extensions.')
             for results in search(f'site:{domain} filetype:{files}', tld='com', lang='en', num=10, start=0, stop=None, pause=5):
                 print(success + f'[{files} extension found] - {results}')
                 url_path = results
                 head, tail = os.path.split(url_path)
-                urllib.request.urlretrieve(url_path, f'{domain}\\{tail}')
+                urllib.request.urlretrieve(url_path, f'{tail}')
                 request = request + 1
                 if request == 100:
                     break
