@@ -65,12 +65,10 @@ def msdorker():
                 time.sleep(1)
         except urllib.error.HTTPError as e:
             if e.code == 404:
-                print(e.code)
                 print(
                     fail + f'[Error Code 404] Web server is responding with 404 error. Skipping.')
                 continue
             if e.code == 429:
-                print(e.code)
                 print(
                     fail + f'\n[Error Code 429] Google is timing out queries. Wait a while and try again.\n')
                 quit()
