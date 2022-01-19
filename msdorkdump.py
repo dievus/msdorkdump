@@ -54,7 +54,7 @@ def msdorker():
                 os.remove('.google-cookie')    
             print(info + f'[info] Checking for {files} extensions.')
             rand_user_agent = random.choice(user_agents)
-            for results in search(f'site:{domain} filetype:{files}', tld='com', lang='en', num=100, start=0, stop=None, pause=5, user_agent=rand_user_agent):
+            for results in search(f'site:{domain} filetype:{files}', tld='com', lang='en', num=10, start=0, stop=None, pause=5, user_agent=rand_user_agent):
                 print(success + f'[{files} extension found] - {results}')
                 url_path = results
                 head, tail = os.path.split(url_path)
@@ -68,6 +68,8 @@ def msdorker():
                 print(
                     fail + f'[Error Code 404] Web server is responding with 404 error. Skipping.')
                 continue
+            if e.code == 403:
+                print(fail + f'[error Code 403] Web server is responding with 403 error. Skipping.')
             if e.code == 429:
                 print(
                     fail + f'\n[Error Code 429] Google is timing out queries. Wait a while and try again.\n')
