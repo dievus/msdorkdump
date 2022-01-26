@@ -6,7 +6,7 @@
   <img src="/images/dorkdump.png" />
 </p>
 
-MSDorkDump is a Google Dork File Finder that queries a specified domain name and variety of file extensions (pdf, doc, docx, etc), and downloads them. Note that due to Google's built in rate limiting, queries may end up timed out if too many are made in a short amount of time.
+MSDorkDump is a Google Dork File Finder that queries a specified domain name and variety of file extensions (pdf, doc, docx, etc), downloads , and then runs Exiftool on them to enumerate metadata. Note that due to Google's built in rate limiting, queries may end up timed out if too many are made in a short amount of time.
 
 The goal is to implement some custom tooling into a "MayorSec Toolkit" to be released sometime in the future.
 
