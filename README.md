@@ -26,6 +26,10 @@ This will run the install script to add necessary dependencies to your system.
 Linux users MUST install Exiftool directly to their system.
 ```sudo apt install libimage-exiftool-perl```
 
+### Windows Users
+
+Windows users can download the ZIP file and extract it locally.  Do not move any files as Exiftool calls from the /tools directory.
+
 You can then run:
 
 ```python3 msdorkdump.py <domain>```
