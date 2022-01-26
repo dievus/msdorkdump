@@ -1,5 +1,6 @@
+from modulefinder import Module
 from ssl import SSL_ERROR_SSL
-from urllib.error import HTTPError
+from subprocess import getoutput
 from colorama import Fore, Style, init
 import urllib.request
 import time
@@ -8,6 +9,8 @@ import os
 from os.path import exists
 from googlesearch import search
 import random
+import exiftool
+import pathlib
 global domain
 
 global success, info, fail
@@ -32,7 +35,7 @@ def banner():
     print('██████╔╝╚██████╔╝██║  ██║██║  ██╗  ██████╔╝╚██████╔╝██║ ╚═╝ ██║██║     ')
     print('╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚═╝   \n')
     print('                       Google Dork File Finder                         ')
-    print('                            Version 1.0.0                              ')
+    print('                            Version 1.0.1                              ')
     print('                       A project by The Mayor                          ')
     print('               python3 msdorkdump.py <domain> to start                 ' + Style.RESET_ALL)
     print("-" * 73)
@@ -54,7 +57,7 @@ def msdorker():
                 os.remove('.google-cookie')    
             print(info + f'[info] Checking for {files} extensions.')
             rand_user_agent = random.choice(user_agents)
-            for results in search(f'site:{domain} filetype:{files}', tld='com', lang='en', num=10, start=0, stop=None, pause=5, user_agent=rand_user_agent):
+            for results in search(f'site:{domain} filetype:{files}', tld='com', lang='en', num=10, start=0, stop=None, pause=5, user_agent=f'{rand_user_agent}'):
                 print(success + f'[{files} extension found] - {results}')
                 url_path = results
                 head, tail = os.path.split(url_path)
@@ -62,6 +65,122 @@ def msdorker():
                 request = request + 1
                 if request == 100:
                     break            
+                filename = tail
+                ext = os.path.splitext(filename)[1]
+                if sys.platform.startswith('win32'):                
+                    with exiftool.ExifTool(exif) as et:
+                        metadata = et.get_metadata(filename)    
+                        # print(metadata)
+                        file_name = et.get_tag('File:FileName', filename)    
+                        print(f"\nMetadata results for {filename}")
+                        print('-' * 50)
+                        file_size = et.get_tag('File:FileSize', filename)
+                        file_size = file_size / 1000
+                        if file_size < 1000:
+                            file_size = str(round(file_size, 2))
+                            print(f"File Size: {file_size}kb")  
+                        elif file_size >= 1000:
+                            file_size = file_size / 1000
+                            file_size = str(round(file_size, 2))    
+                            print(f'File Size: {file_size}mb')  
+                        if ext == '.pdf':
+                            file_title = et.get_tag('PDF:Title', filename)
+                            print('File Title: ' + str(file_title))
+                            create_date = et.get_tag('XMP:CreateDate', filename)
+                            print('File Creation Date: ' + str(create_date))
+                            author = et.get_tag('PDF:Author', filename)
+                            print('Author: ' + str(author))
+                            creator_software = et.get_tag('XMP:CreatorTool', filename)
+                            print('Software: ' + creator_software)
+                            extension_format = et.get_tag('XMP:Format', filename)
+                            print('Extension Format: ' + str(extension_format))
+                            pass
+                        if ext == '.doc':
+                            file_title = et.get_tag('FlashPix:Title', filename)
+                            print('File Title: ' + file_title)
+                            create_date = et.get_tag('FlashPix:CreateDate', filename)
+                            print('File Creation Date: ' + str(create_date))
+                            author = et.get_tag('FlashPix:Author', filename)
+                            print('Author: ' + author)
+                            creator_software = et.get_tag('FlashPix:Software', filename)
+                            print('Software: ' + creator_software)
+                            extension_format = et.get_tag('FlashPix:CompObjUserType', filename)
+                            print('Extension Format: ' + str(extension_format))
+                        if ext == '.docx':
+                            file_title = et.get_tag('XMP:Title', filename)
+                            print('File Title: ' + str(file_title))
+                            create_date = et.get_tag('XML:CreateDate', filename)
+                            print('File Creation Date: ' + str(create_date))
+                            author = et.get_tag('XMP:Creator', filename)
+                            print('Author: ' + author)
+                            creator_software = et.get_tag('XML:Application', filename)
+                            print('Software: ' + creator_software)
+                            extension_format = et.get_tag('File:FileTypeExtension', filename)
+                            print('Extension Format: ' + str(extension_format))        
+                        if ext == '.ppt':
+                            file_title = et.get_tag('FlashPix:Title', filename)
+                            print('File Title: ' + file_title)
+                            create_date = et.get_tag('FlashPix:CreateDate', filename)
+                            print('File Creation Date: ' + str(create_date))
+                            author = et.get_tag('FlashPix:Author', filename)
+                            print('Author: ' + author)
+                            creator_software = et.get_tag('FlashPix:Software', filename)
+                            print('Software: ' + creator_software)
+                            extension_format = et.get_tag('File:FileTypeExtension', filename)
+                            print('Extension Format: ' + str(extension_format))
+                        if ext == '.pptx':
+                            file_title = et.get_tag('XMP:Title', filename)
+                            print('File Title: ' + file_title)
+                            create_date = et.get_tag('XML:CreateDate', filename)
+                            print('File Creation Date: ' + str(create_date))
+                            author = et.get_tag('XMP:Creator', filename)
+                            print('Author: ' + author)
+                            creator_software = et.get_tag('XML:Application', filename)
+                            print('Software: ' + creator_software)
+                            extension_format = et.get_tag('File:FileTypeExtension', filename)
+                            print('Extension Format: ' + str(extension_format)) 
+                        if ext == '.xlsx':
+                            tab_title = et.get_tag('XML:TitlesOfParts', filename)
+                            print('Tab Titles: ' + str(tab_title))
+                            create_date = et.get_tag('XML:CreateDate', filename)
+                            print('File Creation Date: ' + str(create_date))
+                            author = et.get_tag('XMP:Creator', filename)
+                            print('Author: ' + author)
+                            creator_software = et.get_tag('XML:Application', filename)
+                            print('Software: ' + creator_software)
+                            extension_format = et.get_tag('File:FileTypeExtension', filename)
+                            print('Extension Format: ' + str(extension_format))     
+                        if ext == '.xls':
+                            file_title = et.get_tag('FlashPix:TitleOfParts', filename)
+                            print('Tab Titles: ' + str(file_title))
+                            create_date = et.get_tag('FlashPix:CreateDate', filename)
+                            print('File Creation Date: ' + str(create_date))
+                            author = et.get_tag('FlashPix:Author', filename)
+                            print('Author: ' + author)
+                            creator_software = et.get_tag('FlashPix:Software', filename)
+                            print('Software: ' + creator_software)
+                            extension_format = et.get_tag('File:FileTypeExtension', filename)
+                            print('Extension Format: ' + str(extension_format))
+                else:
+                    print(f"\nMetadata results for {filename}")
+                    print('-' * 50)
+                    if ext == '.pdf':
+                        cmd = f'exiftool {filename} -s -FileSize -*Title* -*CreateDate* -Author -CreatorTool -Format'
+                    if ext == '.doc':
+                        cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Author -Software -*CompObjUserType*'
+                    if ext == '.docx':
+                        cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Creator -Application -*FileTypeExtension*'
+                    if ext == '.ppt':
+                        cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Author -Software -*FileTypeExtension*'
+                    if ext == '.pptx':
+                        cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Creator -Application -*FileTypeExtension*'
+                    if ext == '.xls':
+                        cmd = f'exiftool {filename} -s -FileSize -*Parts* -CreateDate -Author -Software -*FileTypeExtension*'
+                    if ext == '.xlsx':
+                        cmd = f'exiftool {filename} -s -FileSize -*Parts* -CreateDate -Creator -Application -*FileTypeExtension*'
+                    response = getoutput(cmd)
+                    print(response + '\n')
+
                 time.sleep(1)
         except urllib.error.HTTPError as e:
             if e.code == 404:
@@ -81,12 +200,17 @@ def msdorker():
         except urllib.error.URLError:
             print(fail + f'[Error] File could not be downloaded. Skipping.')
             continue
+        except ModuleNotFoundError:
+            print(fail + f'[Error] Run sudo pip3 -r requirements.txt to install necessary imports.')
 
 
 if __name__ == "__main__":
     try:
         init()
         banner()
+        if sys.platform.startswith('win32'):
+            cur_path = os.path.abspath(os.getcwd())     
+            exif = f'{cur_path}\\tools\\exiftool.exe'           
         domain = sys.argv[1]
         msdorker()
         print(info + f'\n[info] Dork scanning for {domain} completed.\n')
