@@ -114,7 +114,7 @@ def msdorker():
                                 author = et.get_tag('PDF:Author', filename)
                                 print('Author: ' + str(author))
                                 creator_software = et.get_tag('XMP:CreatorTool', filename)
-                                print('Software: ' + creator_software)
+                                print('Software: ' + str(creator_software))
                                 extension_format = et.get_tag('XMP:Format', filename)
                                 print('Extension Format: ' + str(extension_format))
                                 pass
