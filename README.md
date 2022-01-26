@@ -21,7 +21,7 @@ Change directories to msdorkdump and run:
 
 This will run the install script to add necessary dependencies to your system.
 
-# Linux Users
+### Linux Users
 
 Linux users MUST install Exiftool directly to their system.
 ```sudo apt install libimage-exiftool-perl```
