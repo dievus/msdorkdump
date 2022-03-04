@@ -225,7 +225,8 @@ def msdorker():
             continue
         except ModuleNotFoundError:
             print(fail + f'[Error] Run sudo pip3 -r requirements.txt to install necessary imports.')
-
+        except UnicodeDecodeError:
+            continue
 
 if __name__ == "__main__":
     try:
