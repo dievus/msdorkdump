@@ -79,8 +79,11 @@ def msdorker():
                 num = int(args.number)
             if args.number is None:
                 num = 10
-            for results in search(f'site:{domain} filetype:{files}', tld='com', lang='en', num=int(f'{num}'), start=0, stop=None, pause=5, user_agent=f'{rand_user_agent}'):
+            for results in search(f'site:{domain} filetype:{files}', tld='com', lang='en', num=int(f'{num}'), start=0, stop=None, pause=5):
                 print(success + f'[{files} extension found] - {results}')
+                opener=urllib.request.build_opener()
+                opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
+                urllib.request.install_opener(opener)                
                 url_path = results
                 head, tail = os.path.split(url_path)
                 urllib.request.urlretrieve(url_path, f'{tail}')
