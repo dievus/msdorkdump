@@ -192,20 +192,32 @@ def msdorker():
                         print('-' * 50)
                         if ext == '.pdf':
                             cmd = f'exiftool {filename} -s -FileSize -*Title* -*CreateDate* -Author -CreatorTool -Format'
+                            response = getoutput(cmd)
+                            print(response + '\n')                        
                         if ext == '.doc':
                             cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Author -Software -*CompObjUserType*'
+                            response = getoutput(cmd)
+                            print(response + '\n')                        
                         if ext == '.docx':
                             cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Creator -Application -*FileTypeExtension*'
+                            response = getoutput(cmd)
+                            print(response + '\n')
                         if ext == '.ppt':
                             cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Author -Software -*FileTypeExtension*'
+                            response = getoutput(cmd)
+                            print(response + '\n')                        
                         if ext == '.pptx':
                             cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Creator -Application -*FileTypeExtension*'
+                            response = getoutput(cmd)
+                            print(response + '\n')
                         if ext == '.xls':
                             cmd = f'exiftool {filename} -s -FileSize -*Parts* -CreateDate -Author -Software -*FileTypeExtension*'
+                            response = getoutput(cmd)
+                            print(response + '\n')
                         if ext == '.xlsx':
                             cmd = f'exiftool {filename} -s -FileSize -*Parts* -CreateDate -Creator -Application -*FileTypeExtension*'
-                        response = getoutput(cmd)
-                        print(response + '\n')
+                            response = getoutput(cmd)
+                            print(response + '\n')
 
                 time.sleep(1)
         except urllib.error.HTTPError as e:
