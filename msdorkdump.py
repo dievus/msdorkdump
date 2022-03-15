@@ -219,6 +219,8 @@ def msdorker():
                 print(
                     fail + f'\n[Error Code 429] Google is timing out queries. Wait a while and try again.\n')
                 quit()
+        except OSError:
+            continue
             #else:
              #   print(
               #      fail + f'\n[warn] Error code {e.code} identified. Please create a new issue on the Github repo so it can be added.\n')
