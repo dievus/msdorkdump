@@ -32,6 +32,6 @@ Windows users can download the ZIP file and extract it locally.  Do not move any
 
 You can then run:
 
-```python3 msdorkdump.py <domain>```
+```python3 msdorkdump.py -t <domain> -d```
 
 And that's it!
