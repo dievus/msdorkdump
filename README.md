@@ -13,13 +13,35 @@ The goal is to implement some custom tooling into a "MayorSec Toolkit" to be rel
 ## Usage
 Installing MSDorkDump
 
-```git clone https://github.com/dievus/msdorkdump.git```
+```bash
+$ git clone https://github.com/dievus/msdorkdump.git
+$ cd msdorkdump
+$ python3 -m pip install --upgrade pip
+$ python3 -m pip install --no-compile --editable .
+```
 
-Change directories to msdorkdump and run:
+Then run the following command:
 
-```pip3 install -r requirements.txt```
+```bash
+$ msdorkdump
 
-This will run the install script to add necessary dependencies to your system.
+
+  ██████╗  ██████╗ ██████╗ ██╗  ██╗  ██████╗ ██╗   ██╗███╗   ███╗██████╗
+  ██╔══██╗██╔═══██╗██╔══██╗██║ ██╔╝  ██╔══██╗██║   ██║████╗ ████║██╔══██╗
+  ██║  ██║██║   ██║██████╔╝█████╔╝   ██║  ██║██║   ██║██╔████╔██║██████╔╝
+  ██║  ██║██║   ██║██╔══██╗██╔═██╗   ██║  ██║██║   ██║██║╚██╔╝██║██╔═══╝
+  ██████╔╝╚██████╔╝██║  ██║██║  ██╗  ██████╔╝╚██████╔╝██║ ╚═╝ ██║██║
+  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚═╝
+
+                        Google Dork File Finder
+                              Version 1.0.1
+                         A project by The Mayor
+                        msdorkdump.py -h to start
+  -------------------------------------------------------------------------
+  usage: msdorkdump [-h] -t TARGET [-d] [-n NUMBER]
+  msdorkdump: error: the following arguments are required: -t/--target
+```
+
 
 ### Linux Users
 
