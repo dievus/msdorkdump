@@ -10,13 +10,14 @@ import random
 import exiftool
 import argparse
 import textwrap
+import json
 
 global domain
 
 def options():
     opt_parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, epilog=textwrap.dedent(
-        '''Example: python3 msdorkdump -t example.com -d
-Example: python3 msdnsscan.py -t example.com 
+        '''Example: python3 msdorkdump.py -t example.com -d
+Example: python3 msdorkdump.py -t example.com 
 '''))
     requiredNamed = opt_parser.add_argument_group('required arguments')
     requiredNamed.add_argument(
@@ -35,7 +36,7 @@ global success, info, fail
 success, info, fail = Fore.GREEN + Style.BRIGHT, Fore.YELLOW + \
     Style.BRIGHT, Fore.RED + Style.BRIGHT
 global file_types
-file_types = ['doc', 'docx', 'ppt', 'pptx', 'csv', 'pdf', 'xls', 'xlsx']
+file_types = ['doc', 'docm', 'docx', 'ppt', 'pptx', 'csv', 'pdf', 'xls', 'xlsx', 'jpg', 'png', 'svg', 'env', 'gitignore', 'ps1', 'log username putty', 'git']
 global user_agents
 user_agents = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0', 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) Version/11.0.2 Safari/604.4.7', 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36', 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36']
@@ -86,6 +87,7 @@ def msdorker():
                 urllib.request.install_opener(opener)                
                 url_path = results
                 head, tail = os.path.split(url_path)
+                print(tail)
                 urllib.request.urlretrieve(url_path, f'{tail}')
                 request = request + 1
                 if request == 100:
@@ -122,6 +124,17 @@ def msdorker():
                                 print('Extension Format: ' + str(extension_format))
                                 pass
                             if ext == '.doc':
+                                file_title = et.get_tag('FlashPix:Title', filename)
+                                print('File Title: ' + file_title)
+                                create_date = et.get_tag('FlashPix:CreateDate', filename)
+                                print('File Creation Date: ' + str(create_date))
+                                author = et.get_tag('FlashPix:Author', filename)
+                                print('Author: ' + author)
+                                creator_software = et.get_tag('FlashPix:Software', filename)
+                                print('Software: ' + creator_software)
+                                extension_format = et.get_tag('FlashPix:CompObjUserType', filename)
+                                print('Extension Format: ' + str(extension_format))
+                            if ext == '.docm':
                                 file_title = et.get_tag('FlashPix:Title', filename)
                                 print('File Title: ' + file_title)
                                 create_date = et.get_tag('FlashPix:CreateDate', filename)
@@ -187,17 +200,28 @@ def msdorker():
                                 print('Software: ' + creator_software)
                                 extension_format = et.get_tag('File:FileTypeExtension', filename)
                                 print('Extension Format: ' + str(extension_format))
+                            if ext == '.csv':
+                                file_title = et.get_tag('FlashPix:TitleOfParts', filename)
+                                print('Tab Titles: ' + str(file_title))
+                                create_date = et.get_tag('FlashPix:CreateDate', filename)
+                                print('File Creation Date: ' + str(create_date))
+                                author = et.get_tag('FlashPix:Author', filename)
+                                print('Author: ' + author)
+                                creator_software = et.get_tag('FlashPix:Software', filename)
+                                print('Software: ' + creator_software)
+                                extension_format = et.get_tag('File:FileTypeExtension', filename)
+                                print('Extension Format: ' + str(extension_format))
                     else:
                         print(f"\nMetadata results for {filename}")
                         print('-' * 50)
                         if ext == '.pdf':
                             cmd = f'exiftool {filename} -s -FileSize -*Title* -*CreateDate* -Author -CreatorTool -Format'
                             response = getoutput(cmd)
-                            print(response + '\n')                        
+                            print(response + '\n')
                         if ext == '.doc':
                             cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Author -Software -*CompObjUserType*'
                             response = getoutput(cmd)
-                            print(response + '\n')                        
+                            print(response + '\n')
                         if ext == '.docx':
                             cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Creator -Application -*FileTypeExtension*'
                             response = getoutput(cmd)
@@ -205,7 +229,7 @@ def msdorker():
                         if ext == '.ppt':
                             cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Author -Software -*FileTypeExtension*'
                             response = getoutput(cmd)
-                            print(response + '\n')                        
+                            print(response + '\n')
                         if ext == '.pptx':
                             cmd = f'exiftool {filename} -s -FileSize -Title -CreateDate -Creator -Application -*FileTypeExtension*'
                             response = getoutput(cmd)
@@ -218,7 +242,6 @@ def msdorker():
                             cmd = f'exiftool {filename} -s -FileSize -*Parts* -CreateDate -Creator -Application -*FileTypeExtension*'
                             response = getoutput(cmd)
                             print(response + '\n')
-
                 time.sleep(1)
         except urllib.error.HTTPError as e:
             if e.code == 404:
@@ -231,18 +254,25 @@ def msdorker():
                 print(
                     fail + f'\n[Error Code 429] Google is timing out queries. Wait a while and try again.\n')
                 quit()
-        except OSError:
-            continue
             #else:
              #   print(
               #      fail + f'\n[warn] Error code {e.code} identified. Please create a new issue on the Github repo so it can be added.\n')
                # continue
+        except OSError:
+            continue
+        except AttributeError:
+            pass
         except urllib.error.URLError:
             print(fail + f'[Error] File could not be downloaded. Skipping.')
             continue
         except ModuleNotFoundError:
             print(fail + f'[Error] Run sudo pip3 -r requirements.txt to install necessary imports.')
         except UnicodeDecodeError:
+            continue
+        except json.decoder.JSONDecodeError:
+            print(fail + f'[Error]A JSON error is preventing the file from downloading. Continuing.')
+            continue
+        except TypeError:
             continue
 
 if __name__ == "__main__":
