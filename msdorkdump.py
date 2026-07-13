@@ -5,14 +5,15 @@ import time
 import sys
 import os
 from os.path import exists
-from googlesearch import search
+from ddgs import DDGS
 import random
 import exiftool
 import argparse
 import textwrap
 import json
 
-global domain
+import io
+import contextlib
 
 def options():
     opt_parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, epilog=textwrap.dedent(
@@ -25,7 +26,9 @@ Example: python3 msdorkdump.py -t example.com
     opt_parser.add_argument(
         '-d', '--download', help='Downloads files for inspection and metadata enumeration.', action='store_true')
     opt_parser.add_argument(
-        '-n', '--number', help='Number of results per page. Default is 10. Increased numbers risk timeouts.')        
+        '-n', '--number', help='Number of results per page. Default is 10. Increased numbers risk timeouts.')
+    opt_parser.add_argument(
+        '-v', '--verbose', help='Show verbose output including queries and raw results.', action='store_true')        
     global args
     args = opt_parser.parse_args()
     if len(sys.argv) == 1:
@@ -69,36 +72,43 @@ def msdorker():
     else:
         os.mkdir(domain)
     os.chdir(domain)
+    num = int(args.number) if args.number else 10
     for files in file_types:
+        print(info + f'[info] Checking for {files} extensions.')
+        query = f'site:{domain} filetype:{files}'
+        if args.verbose:
+            print(info + f'[info] Query: {query}')
         try:
-            file_exists = exists('.google-cookie')
-            if file_exists == True:
-                os.remove('.google-cookie')    
-            print(info + f'[info] Checking for {files} extensions.')
-            rand_user_agent = random.choice(user_agents)
-            if args.number:
-                num = int(args.number)
-            if args.number is None:
-                num = 10
-            for results in search(f'site:{domain} filetype:{files}', tld='com', lang='en', num=int(f'{num}'), start=0, stop=None, pause=5):
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                with DDGS() as ddgs:
+                    ddg_results = ddgs.text(query, max_results=num)
+            results_list = [r['href'] for r in ddg_results if r['href'].lower().endswith(f'.{files}')] if ddg_results else []
+            if args.verbose:
+                print(info + f'[info] Raw results: {results_list}')
+        except Exception:
+            results_list = []
+        if not results_list:
+            print(info + f'[info] No results found for {files}.')
+            continue
+        try:
+            for results in results_list:
                 print(success + f'[{files} extension found] - {results}')
-                opener=urllib.request.build_opener()
-                opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
-                urllib.request.install_opener(opener)                
+                opener = urllib.request.build_opener()
+                opener.addheaders = [('User-Agent', random.choice(user_agents))]
+                urllib.request.install_opener(opener)
                 url_path = results
                 head, tail = os.path.split(url_path)
                 print(tail)
                 urllib.request.urlretrieve(url_path, f'{tail}')
-                request = request + 1
+                request += 1
                 if request == 100:
-                    break            
+                    break
                 filename = tail
                 ext = os.path.splitext(filename)[1]
                 if args.download:
                     if sys.platform.startswith('win32'):                
                         with exiftool.ExifTool(exif) as et:
                             metadata = et.get_metadata(filename)    
-                            # print(metadata)
                             file_name = et.get_tag('File:FileName', filename)    
                             print(f"\nMetadata results for {filename}")
                             print('-' * 50)
@@ -242,22 +252,16 @@ def msdorker():
                             cmd = f'exiftool {filename} -s -FileSize -*Parts* -CreateDate -Creator -Application -*FileTypeExtension*'
                             response = getoutput(cmd)
                             print(response + '\n')
-                time.sleep(1)
+                time.sleep(random.randint(5, 15))
         except urllib.error.HTTPError as e:
             if e.code == 404:
-                print(
-                    fail + f'[Error Code 404] Web server is responding with 404 error. Skipping.')
+                print(fail + f'[Error Code 404] Web server is responding with 404 error. Skipping.')
                 continue
             if e.code == 403:
                 print(fail + f'[error Code 403] Web server is responding with 403 error. Skipping.')
             if e.code == 429:
-                print(
-                    fail + f'\n[Error Code 429] Google is timing out queries. Wait a while and try again.\n')
+                print(fail + f'\n[Error Code 429] Google is timing out queries. Wait a while and try again.\n')
                 quit()
-            #else:
-             #   print(
-              #      fail + f'\n[warn] Error code {e.code} identified. Please create a new issue on the Github repo so it can be added.\n')
-               # continue
         except OSError:
             continue
         except AttributeError:
@@ -270,9 +274,10 @@ def msdorker():
         except UnicodeDecodeError:
             continue
         except json.decoder.JSONDecodeError:
-            print(fail + f'[Error]A JSON error is preventing the file from downloading. Continuing.')
+            print(fail + f'[Error] A JSON error is preventing the file from downloading. Continuing.')
             continue
-        except TypeError:
+        except TypeError as e:
+            print(fail + f'[TypeError] {e}')
             continue
 
 if __name__ == "__main__":
